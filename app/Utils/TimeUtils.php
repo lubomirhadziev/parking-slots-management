@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-class Time
+class TimeUtils
 {
 
     /**

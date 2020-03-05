@@ -19,12 +19,13 @@ class VehicleTypesRates extends Model
 
     public function vehicle_type()
     {
-        return $this->hasOne('App\Models\VehicleTypes');
+        return $this->hasOne('App\Models\VehicleTypes', 'id', 'vehicle_type_id');
     }
+
 
     public function rate()
     {
-        return $this->hasOne('App\Models\Rates');
+        return $this->hasOne('App\Models\Rates', 'id', 'rate_id');
     }
 
 }

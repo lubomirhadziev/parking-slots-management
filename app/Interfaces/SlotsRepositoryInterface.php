@@ -2,15 +2,19 @@
 
 namespace App\Interfaces;
 
-use App\Models\Slots;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\DiscountCards;
+use App\Models\VehicleTypes;
 
 interface SlotsRepositoryInterface
 {
     public function countFreeSlots();
 
-    public function checkSlotAmount(Slots $slot, Collection $rates);
-
     public function findSlotByVehicleNumber(string $vehicleNumber);
+
+    public function isVehicleCheckedIn(string $vehicleNumber);
+
+    public function createSlot(string $vehicleNumber, VehicleTypes $vehicleType, DiscountCards $card = null);
+
+    public function checkOutSlot(string $vehicleNumber);
 
 }

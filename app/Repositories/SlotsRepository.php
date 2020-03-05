@@ -3,21 +3,34 @@
 namespace App\Repositories;
 
 use App\Interfaces\SlotsRepositoryInterface;
+use App\Models\DiscountCards;
 use App\Models\Slots;
-use App\Utils\Time;
+use App\Models\VehicleTypes;
+use App\Utils\TimeUtils;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 
 class SlotsRepository implements SlotsRepositoryInterface
 {
+    // TODO: move to config or .env
     const MAX_AVAILABLE_SLOTS = 200;
 
-    private $timeUtils;
-
-    public function __construct(Time $timeUtils)
+    /**
+     * @param string $vehicleNumber
+     * @param VehicleTypes $vehicleType
+     * @param DiscountCards $card
+     * @return Slots
+     */
+    public function createSlot(string $vehicleNumber, VehicleTypes $vehicleType, DiscountCards $card = null)
     {
-        $this->timeUtils = $timeUtils;
+        $slot = new Slots();
+        $slot->vehicle_number = $vehicleNumber;
+        $slot->vehicle_type_id = $vehicleType->id;
+        $slot->discount_card_id = $card->id ?? null;
+        $slot->save();
+
+        return $slot;
     }
 
     /**
@@ -33,48 +46,36 @@ class SlotsRepository implements SlotsRepositoryInterface
     }
 
     /**
-     * @param Slots $slot
-     * @param Collection $rates
-     * @return DateTime
-     * @throws Exception
+     * @param string $vehicleNumber
+     * @return Slots
      */
-    public function checkSlotAmount(Slots $slot, Collection $rates)
-    {
-        $startingTime = new DateTime($slot->starting_at);
-        $endTime = ($slot->end_at != null ? new DateTime($slot->end_at) : new DateTime());
-        $amount = 0;
-
-        while ($startingTime <= $endTime) {
-            $amount += $this->findAmountPerHour($startingTime, $rates);
-
-            $startingTime = $startingTime->modify('+1 hour');
-        }
-
-        return $amount;
-    }
-
     public function findSlotByVehicleNumber(string $vehicleNumber)
     {
-        return Slots::where('vehicle_number', '=', $vehicleNumber)->first();
+        return Slots::where('vehicle_number', '=', $vehicleNumber)
+            ->whereNull('end_at')
+            ->first();
     }
 
     /**
-     * @param DateTime $startingTime
-     * @param Collection $rates
-     * @return int|mixed
+     * @param string $vehicleNumber
+     * @return boolean
      */
-    private function findAmountPerHour(DateTime $startingTime, Collection $rates)
+    public function isVehicleCheckedIn(string $vehicleNumber)
     {
-        $time = strtotime($startingTime->format('H:i:s'));
+        return Slots::where('vehicle_number', '=', $vehicleNumber)
+            ->whereNull('end_at')
+            ->exists();
+    }
 
-        foreach ($rates as $rate) {
-
-            if ($this->timeUtils->isTimeBetween(strtotime($rate->from_time), strtotime($rate->to_time), $time)) {
-                return $rate->amount_per_hour;
-            }
-        }
-
-        return 0;
+    /**
+     * @param string $vehicleNumber
+     * @throws Exception
+     */
+    public function checkOutSlot(string $vehicleNumber)
+    {
+        $slot = $this->findSlotByVehicleNumber($vehicleNumber);
+        $slot->end_at = new DateTime();
+        $slot->save();
     }
 
 }
