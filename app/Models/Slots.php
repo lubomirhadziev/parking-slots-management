@@ -13,12 +13,12 @@ class Slots extends Model
 
     public function vehicle_type()
     {
-        return $this->hasOne('App\Models\VehicleTypes');
+        return $this->hasOne('App\Models\VehicleTypes', 'id');
     }
 
     public function discount_card()
     {
-        return $this->hasOne('App\Models\DiscountCards');
+        return $this->hasOne('App\Models\DiscountCards', 'id');
     }
 
 }
