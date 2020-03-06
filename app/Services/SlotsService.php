@@ -42,8 +42,13 @@ class SlotsService implements SlotsServiceInterface
     {
         $slot = $this->slotsRepository->findSlotByVehicleNumber($vehicleNumber);
         $rates = $this->vehicleTypesRatesRepository->getAllByVehicleType($slot->vehicle_type);
+        $amount = $this->checkSlotAmount($slot, $rates);
 
-        return $this->checkSlotAmount($slot, $rates);
+        if ($slot->discount_card) {
+            $amount -= ($amount * $slot->discount_card->discount_percentage) / 100;
+        }
+
+        return $amount;
     }
 
     /**

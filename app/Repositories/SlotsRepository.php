@@ -21,6 +21,7 @@ class SlotsRepository implements SlotsRepositoryInterface
      * @param VehicleTypes $vehicleType
      * @param DiscountCards $card
      * @return Slots
+     * @throws Exception
      */
     public function createSlot(string $vehicleNumber, VehicleTypes $vehicleType, DiscountCards $card = null)
     {
@@ -28,6 +29,7 @@ class SlotsRepository implements SlotsRepositoryInterface
         $slot->vehicle_number = $vehicleNumber;
         $slot->vehicle_type_id = $vehicleType->id;
         $slot->discount_card_id = $card->id ?? null;
+        $slot->starting_at = new DateTime();
         $slot->save();
 
         return $slot;

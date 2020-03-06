@@ -37,10 +37,14 @@ class SlotsController extends BaseController
 
     public function checkIn(Request $request)
     {
-        $vehicleNumber = $request->json()->get('vehicle_number');
-        $vehicleTypeKey = strtoupper($request->json()->get('vehicle_type'));
-        $cardKey = $request->json()->get('card');
+        $vehicleNumber = trim($request->json()->get('vehicle_number'));
+        $vehicleTypeKey = strtoupper(trim($request->json()->get('vehicle_type')));
+        $cardKey = trim($request->json()->get('card'));
         $card = null;
+
+        if (empty($vehicleNumber)) {
+            return response()->json(['error' => 'Please, provider vehicle number!'], 400);
+        }
 
         if ($this->slotsRepository->isVehicleCheckedIn($vehicleNumber)) {
             return response()->json(['error' => 'Vehicle is already checked in!'], 400);

@@ -7,7 +7,7 @@ docker
 docker-compose
 ```
 
-## Example request to API endpoints
+## Example requests to API endpoints
 ```
 use Insomnia Rest Client and import ./Insomnia-rest-client.json file
 ```
