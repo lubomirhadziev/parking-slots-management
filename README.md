@@ -33,7 +33,7 @@ http://localhost/
 
 ## Database structure
 ```
-Databases:
+Tables:
     vehicle_types
     rates
     vehicle_types_rates
