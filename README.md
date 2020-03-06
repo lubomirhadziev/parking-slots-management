@@ -66,6 +66,7 @@ Databases:
 
 * slots
     - id
+    - vehicle_number
     - vehicle_type_id
     - discount_card_id (null by default)
     - starting_at
